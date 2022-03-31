@@ -23,11 +23,15 @@ public class VendingMachineImpl implements VendingMachine {
 	}
 
 	public ProductPurchaseResult buyProduct(ProductType productType) {
-			if(insertedAmountCoins - productType.getPrice() >= 0 && vendinMachine.keySet().contains(productType) && vendinMachine.get(productType)>0) {
-				insertedAmountCoins -= productType.getPrice();
-				vendinMachine.computeIfPresent(productType, (key, val) -> val -1 );
-				return new ProductPurchaseResult(true, insertedAmountCoins, productType);				
-				} return new ProductPurchaseResult(false, insertedAmountCoins, productType);
+			double amountInserted = insertedAmountCoins;
+			double change = Math.round((amountInserted - productType.getPrice())*100); 
+			change = change/100;
+			if(productType.getPrice() <= amountInserted && vendinMachine.keySet().contains(productType) && vendinMachine.get(productType)>0) {
+				amountInserted-=productType.getPrice();
+				insertedAmountCoins = 0.0;
+				return new ProductPurchaseResult(true, change, productType);				
+			} 
+			return new ProductPurchaseResult(false, insertedAmountCoins, productType);
 	}
 
 	public void insertCoin(Coin coin) {
